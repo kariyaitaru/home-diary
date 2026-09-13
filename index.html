@@ -970,7 +970,21 @@ function renderForm(){
     </div>
 
     <div class="card">
-      <div class="field-label"><span class="dot morning"></span>排便</div>
+      <div class="field-label"><span class="dot night"></span>前日の夕食と就寝</div>
+      <div class="time-row">
+        <div class="time-field">
+          <label>夕食時刻</label>
+          <input type="time" id="dinnerTime" step="1800" value="${e.dinnerTime||'18:00'}">
+        </div>
+        <div class="time-field">
+          <label>就寝時刻</label>
+          <input type="time" id="bedTime" step="1800" value="${e.bedTime||'21:00'}">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="field-label"><span class="dot morning"></span>前日の排便</div>
       <div class="seg">
         <button data-bowel="no" class="${e.bowelMovement==='no'?'sel-no':''}">なし</button>
         <button data-bowel="yes" class="${e.bowelMovement==='yes'?'sel-yes':''}">あり</button>
@@ -978,7 +992,7 @@ function renderForm(){
     </div>
 
     <div class="card">
-      <div class="field-label"><span class="dot morning"></span>水分調整</div>
+      <div class="field-label"><span class="dot morning"></span>昨晩の水分調整</div>
       <div class="seg">
         <button data-fluid="no" class="${e.fluidAdjustment==='no'?'sel-no':''}">なし</button>
         <button data-fluid="yes" class="${e.fluidAdjustment==='yes'?'sel-yes':''}">あり</button>
@@ -999,20 +1013,6 @@ function renderForm(){
         <button data-nt="none" class="${e.nightToilet==='none'?'sel-no':''}">なし</button>
         <button data-nt="notout" class="${e.nightToilet==='notout'?'sel-morning':''}">出なかった</button>
         <button data-nt="out" class="${e.nightToilet==='out'?'sel-yes':''}">出た</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="field-label"><span class="dot night"></span>時刻</div>
-      <div class="time-row">
-        <div class="time-field">
-          <label>夕食時刻</label>
-          <input type="time" id="dinnerTime" step="1800" value="${e.dinnerTime||'18:00'}">
-        </div>
-        <div class="time-field">
-          <label>就寝時刻</label>
-          <input type="time" id="bedTime" step="1800" value="${e.bedTime||'21:00'}">
-        </div>
       </div>
     </div>
 
