@@ -594,6 +594,10 @@ function defaultEntry(){
     wet: null,               // 'yes' | 'no' | null
     wetAmount: {pants:false, pajama:false, sheet:false},
     morningUrine: null,      // 'none'|'little'|'normal'|'much'
+    bowelMovement: null,     // 'yes' | 'no' | null  （排便）
+    fluidAdjustment: null,   // 'yes' | 'no' | null  （水分調整）
+    nightWaking: null,       // 'yes' | 'no' | null  （夜間起床）
+    nightToilet: null,       // 'none' | 'notout' | 'out' | null  （夜間トイレ）
     dinnerTime: '18:00',
     bedTime: '21:00',
     memo: ''
@@ -966,6 +970,39 @@ function renderForm(){
     </div>
 
     <div class="card">
+      <div class="field-label"><span class="dot morning"></span>排便</div>
+      <div class="seg">
+        <button data-bowel="no" class="${e.bowelMovement==='no'?'sel-no':''}">なし</button>
+        <button data-bowel="yes" class="${e.bowelMovement==='yes'?'sel-yes':''}">あり</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="field-label"><span class="dot morning"></span>水分調整</div>
+      <div class="seg">
+        <button data-fluid="no" class="${e.fluidAdjustment==='no'?'sel-no':''}">なし</button>
+        <button data-fluid="yes" class="${e.fluidAdjustment==='yes'?'sel-yes':''}">あり</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="field-label"><span class="dot night"></span>夜間起床</div>
+      <div class="seg">
+        <button data-nw="no" class="${e.nightWaking==='no'?'sel-no':''}">なし</button>
+        <button data-nw="yes" class="${e.nightWaking==='yes'?'sel-yes':''}">あり</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="field-label"><span class="dot night"></span>夜間トイレ</div>
+      <div class="seg">
+        <button data-nt="none" class="${e.nightToilet==='none'?'sel-no':''}">なし</button>
+        <button data-nt="notout" class="${e.nightToilet==='notout'?'sel-morning':''}">出なかった</button>
+        <button data-nt="out" class="${e.nightToilet==='out'?'sel-yes':''}">出た</button>
+      </div>
+    </div>
+
+    <div class="card">
       <div class="field-label"><span class="dot night"></span>時刻</div>
       <div class="time-row">
         <div class="time-field">
@@ -1013,6 +1050,30 @@ function renderForm(){
       renderForm();
     };
   });
+  area.querySelectorAll('[data-bowel]').forEach(b=>{
+    b.onclick = ()=>{
+      currentEntry.bowelMovement = currentEntry.bowelMovement === b.dataset.bowel ? null : b.dataset.bowel;
+      renderForm();
+    };
+  });
+  area.querySelectorAll('[data-fluid]').forEach(b=>{
+    b.onclick = ()=>{
+      currentEntry.fluidAdjustment = currentEntry.fluidAdjustment === b.dataset.fluid ? null : b.dataset.fluid;
+      renderForm();
+    };
+  });
+  area.querySelectorAll('[data-nw]').forEach(b=>{
+    b.onclick = ()=>{
+      currentEntry.nightWaking = currentEntry.nightWaking === b.dataset.nw ? null : b.dataset.nw;
+      renderForm();
+    };
+  });
+  area.querySelectorAll('[data-nt]').forEach(b=>{
+    b.onclick = ()=>{
+      currentEntry.nightToilet = currentEntry.nightToilet === b.dataset.nt ? null : b.dataset.nt;
+      renderForm();
+    };
+  });
   document.getElementById('dinnerTime').oninput = (ev)=> currentEntry.dinnerTime = ev.target.value;
   document.getElementById('bedTime').oninput = (ev)=> currentEntry.bedTime = ev.target.value;
   const memoEl = document.getElementById('memo');
@@ -1032,6 +1093,8 @@ async function saveCurrentEntry(){
   const map = getChildEntries(currentChildId);
   const key = dateKey(currentDate);
   const isEmpty = !currentEntry.wet && !currentEntry.morningUrine &&
+    !currentEntry.bowelMovement && !currentEntry.fluidAdjustment &&
+    !currentEntry.nightWaking && !currentEntry.nightToilet &&
     !currentEntry.dinnerTime && !currentEntry.bedTime && !currentEntry.memo;
   if(isEmpty){
     delete map[key];
@@ -1059,7 +1122,16 @@ function renderHistory(){
     const d = new Date(k+'T00:00:00');
     const wetLabel = e.wet==='yes' ? 'おねしょ あり' : (e.wet==='no' ? 'おねしょ なし' : '');
     const muLabel = {none:'朝：無し',little:'朝：少ない',normal:'朝：普通',much:'朝：多い'}[e.morningUrine] || '';
-    const metaParts = [muLabel, e.dinnerTime?`夕食 ${e.dinnerTime}`:'', e.bedTime?`就寝 ${e.bedTime}`:''].filter(Boolean);
+    const ntLabel = {none:'夜間トイレ：なし',notout:'夜間トイレ：出なかった',out:'夜間トイレ：出た'}[e.nightToilet] || '';
+    const metaParts = [
+      muLabel,
+      e.bowelMovement==='yes' ? '排便あり' : '',
+      e.fluidAdjustment==='yes' ? '水分調整あり' : '',
+      e.nightWaking==='yes' ? '夜間起床あり' : '',
+      ntLabel,
+      e.dinnerTime?`夕食 ${e.dinnerTime}`:'',
+      e.bedTime?`就寝 ${e.bedTime}`:''
+    ].filter(Boolean);
     return `
       <div class="history-item" data-date="${k}">
         <div class="history-left">
